@@ -1589,7 +1589,7 @@ function EastOperation:OnAfterPhaseChange(From,Event,To,Phase)
   local targetmgrs = targetcoord:ToStringMGRS()
   local targetllddm = targetcoord:ToStringLLDDM()
   local embed = {}
-  embed.title = "Operation Sleeping Phoenix West Region"
+  embed.title = "Operation Sleeping Phoenix East Region"
   embed.description = "Mission Status Report"
   embed.img = "https://cdn.discordapp.com/avatars/1034319512205545482/8632aaac3c14618467edcfeded166047.png"
   embed.fields = {}
