@@ -14,14 +14,14 @@ local RedSpawnFilename = RedSpawnFilename or "SPRedSpawnedUnitsSave.csv"
 --Build Ground Units List (String matches Mission Editor Group Names and Qty in number needs to match or exceed ground unit groups in ME.
 local RedGroundSave = {}
 local RedGroundTag = {
-  ["RED ARTILLERY-"]= 25,
-  ["RED ARMOR-"] = 30,
-  ["RED COMMAND TRUCKS-"]= 5,
+  ["RED ARTILLERY-"]= 30,
+  ["RED ARMOR-"] = 35,
+  ["RED COMMAND TRUCKS-"]= 10,
   ["RED EWR-"]= 5,
   ["RED SAM SA-13-"] = 10,
   ["RED SAM SA-15-"] = 15,
   ["RED SAM SA-2-"] = 5,  
-  ["RED SAM SA-8-"] = 10,
+  ["RED SAM SA-8-"] = 15,
 }
 for label, number in pairs(RedGroundTag) do
   for i=1, number do

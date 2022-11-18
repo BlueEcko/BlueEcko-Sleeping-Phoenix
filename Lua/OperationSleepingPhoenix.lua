@@ -4,7 +4,7 @@
 -- Settings
 _SETTINGS:SetPlayerMenuOff()
 _SETTINGS:SetImperial()
-_SETTINGS:SetA2G_BR()
+_SETTINGS:SetA2G_LL_DDM()
 _SETTINGS:SetA2A_BRAA()
 _SETTINGS:SetLL_Accuracy( 3 )
 _SETTINGS:SetMGRS_Accuracy( 4 )
@@ -31,9 +31,10 @@ for i=1,1000 do
 end
 
 local menu = MENU_COALITION:New(coalition.side.BLUE,"Ops Menu")
+local menu2 = MENU_COALITION:New(coalition.side.BLUE,"Request Support")
 
-BlueDetectionSet = SET_GROUP:New():FilterCoalitions(coalition.side.BLUE):FilterPrefixes({"AWACS", "EWR", }):FilterStart()
-RedDetectionSet = SET_GROUP:New():FilterCoalitions(coalition.side.RED):FilterPrefixes({"EWR","AWACS"}):FilterStart()
+BlueDetectionSet = SET_GROUP:New():FilterCoalitions(coalition.side.BLUE):FilterPrefixes({"AWACS", "EWR", "SAM" }):FilterStart()
+RedDetectionSet = SET_GROUP:New():FilterCoalitions(coalition.side.RED):FilterPrefixes({"EWR","AWACS", "SAM"}):FilterStart()
 
 RedCapZone01 = ZONE:FindByName("RedCapZone-1")
 RedCapZone02 = ZONE:FindByName("RedCapZone-2")
@@ -57,43 +58,71 @@ RedBorder1 = ZONE_POLYGON:NewFromGroupName("RedBorder-1")
 RedBorder2 = ZONE_POLYGON:NewFromGroupName("RedBorder-2")
 RedBorder3 = ZONE_POLYGON:NewFromGroupName("RedBorder-3")
 RedBorder4 = ZONE_POLYGON:NewFromGroupName("RedBorder-4")
-RedEngageSet = SET_ZONE:New():AddZone(RedBorder1):DrawZone(2,{1,0,0},.5,{1,0,0},.15,2,true)
+RedEngageSet = SET_ZONE:New():AddZone(RedBorder1, RedBorder2, RedBorder3, RedBorder4):DrawZone(2,{1,0,0},.5,{1,0,0},.15,2,true)
 BlueEngageSet = SET_ZONE:New():AddZone(BlueBorder1):DrawZone(2,{0,0,1},.5,{0,0,1},.15,2,true)
+
+
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- SRS PLAYERSOUNDS AND TTS
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-local PhoenixSRS = MSRS:New(hereSRSPath , {31,134,284}, {1,0,0}, 1)
+local PhoenixSRS = MSRS:New(hereSRSPath , {31,131,281}, {radio.modulation.FM,radio.modulation.AM,radio.modulation.AM}, 1)
 PhoenixSRS:SetGoogle(hereSRSGoogle)
 PhoenixSRS:SetVoice("uk-UA-Wavenet-A")
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- PlayerTasking Settings and Task Controller
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-local phoenixtasking = PLAYERTASKCONTROLLER:New("Phoenix",coalition.side.BLUE,PLAYERTASKCONTROLLER.Type.A2G)
-phoenixtasking:DisableTaskInfoMenu()
-phoenixtasking:EnableTaskInfoMenu()
-phoenixtasking:SetMenuOptions(true,5,30)
-phoenixtasking:SetAllowFlashDirection(true)
-phoenixtasking:SetLocale("en")
-phoenixtasking:SetMenuName("Phoenix")
-phoenixtasking:SetSRS({130,255},{radio.modulation.AM,radio.modulation.AM},hereSRSPath,nil,nil,hereSRSPort,"en-AU-Wavenet-C",0.7,hereSRSGoogle)
-phoenixtasking:SetSRSBroadcast({127.5,305},{radio.modulation.AM,radio.modulation.AM})
-phoenixtasking:SetTargetRadius(750)
-phoenixtasking:SetParentMenu(menu)
+local phoenixwesttasking = PLAYERTASKCONTROLLER:New("Phoenix West",coalition.side.BLUE,PLAYERTASKCONTROLLER.Type.A2G)
+phoenixwesttasking:DisableTaskInfoMenu()
+phoenixwesttasking:EnableTaskInfoMenu() 
+phoenixwesttasking:SetMenuOptions(true,5,30)
+phoenixwesttasking:SetAllowFlashDirection(true)
+phoenixwesttasking:SetLocale("en")
+phoenixwesttasking:SetMenuName("Phoenix West")
+phoenixwesttasking:SetSRS({32,132,282},{radio.modulation.FM,radio.modulation.AM,radio.modulation.AM},hereSRSPath,nil,nil,hereSRSPort,"en-AU-Wavenet-C",0.7,hereSRSGoogle)
+phoenixwesttasking:SetSRSBroadcast({30,130,280},{radio.modulation.FM,radio.modulation.AM,radio.modulation.AM})
+phoenixwesttasking:SetTargetRadius(750)
+phoenixwesttasking:SetParentMenu(menu)
+phoenixwesttasking:SetTransmitOnlyWithPlayers(true)
 
---///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
---  Sounds for Smoke and Mirrors
---///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-function phoenixtasking:OnAfterTaskTargetSmoked(From,Event,To,Task)
+function phoenixwesttasking:OnAfterTaskTargetSmoked(From,Event,To,Task)
   local file = "Target Smoke.ogg"
   local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
 end
 
-function phoenixtasking:OnAfterTaskTargetFlared(From,Event,To,Task)
+function phoenixwesttasking:OnAfterTaskTargetFlared(From,Event,To,Task)
   local file = "Target Smoke.ogg"
   local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
 end
 
-function phoenixtasking:OnAfterTaskTargetIlluminated(From,Event,To,Task)
+function phoenixwesttasking:OnAfterTaskTargetIlluminated(From,Event,To,Task)
+  local file = "Target Smoke.ogg"
+  local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
+end
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+local phoenixeasttasking = PLAYERTASKCONTROLLER:New("Phoenix East",coalition.side.BLUE,PLAYERTASKCONTROLLER.Type.A2G)
+phoenixeasttasking:DisableTaskInfoMenu()
+phoenixeasttasking:EnableTaskInfoMenu() 
+phoenixeasttasking:SetMenuOptions(true,5,30)
+phoenixeasttasking:SetAllowFlashDirection(true)
+phoenixeasttasking:SetLocale("en")
+phoenixeasttasking:SetMenuName("Phoenix East")
+phoenixeasttasking:SetSRS({34,134,284},{radio.modulation.FM,radio.modulation.AM,radio.modulation.AM},hereSRSPath,nil,nil,hereSRSPort,"en-AU-Wavenet-C",0.7,hereSRSGoogle)
+phoenixeasttasking:SetSRSBroadcast({30,130,280},{radio.modulation.FM,radio.modulation.AM,radio.modulation.AM})
+phoenixeasttasking:SetTargetRadius(750)
+phoenixeasttasking:SetParentMenu(menu)
+phoenixeasttasking:SetTransmitOnlyWithPlayers(true)
+
+function phoenixeasttasking:OnAfterTaskTargetSmoked(From,Event,To,Task)
+  local file = "Target Smoke.ogg"
+  local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
+end
+
+function phoenixeasttasking:OnAfterTaskTargetFlared(From,Event,To,Task)
+  local file = "Target Smoke.ogg"
+  local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
+end
+
+function phoenixeasttasking:OnAfterTaskTargetIlluminated(From,Event,To,Task)
   local file = "Target Smoke.ogg"
   local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
 end
@@ -101,7 +130,7 @@ end
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 --  Mission Targets Operation 1
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-local OSPPhase1 = { 
+local OPWestPhase1 = { 
  [1] = {       
     TargetName = "RED SAM SA-8-2",
     TargetStatic = false,
@@ -135,31 +164,31 @@ local OSPPhase1 = {
   [6] = {       
     TargetName = "RED ARMOR-14",
     TargetStatic = false,
-    TargetBriefing = "Destroy the APC's located at Tskhinvali\nGrid MM17",
+    TargetBriefing = "Destroy the APC's located at Modzvi\nGrid LM67",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [7] = {       
     TargetName = "RED ARMOR-2",
     TargetStatic = false,
-    TargetBriefing = "Destroy the APC's located at Gori\nGrid MM24",
+    TargetBriefing = "Destroy the APC's located at Nebodzin\nGrid LM64",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [8] = {       
     TargetName = "RED ARMOR-3",
     TargetStatic = false,
-    TargetBriefing = "Destroy the APC's located North of Tbilisi-Lochini Airfield\nGrid MM91",
+    TargetBriefing = "Destroy the APC's located North of Sareki\nGrid LM69",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [9] = {       
     TargetName = "RED ARMOR-4",
     TargetStatic = false,
-    TargetBriefing = "Destroy the APC's located North of Chargali\nGrid MM99",
+    TargetBriefing = "Destroy the APC's located East of Korbouli\nGrid LM77",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [10] = {        
     TargetName = "RED ARMOR-5",
     TargetStatic = false,
-    TargetBriefing = "Destroy the APC's located at Metekhi\nGrid MM44",
+    TargetBriefing = "Destroy the APC's located North of Salieti\nGrid LM58",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [11] = {        
@@ -171,7 +200,7 @@ local OSPPhase1 = {
   [12] = {        
     TargetName = "RED ARTILLERY-1",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery located at Hidistavi\nGrid MM24",
+    TargetBriefing = "Destroy the Artillery located at Tsipa\nGrid LM75",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [13] = {        
@@ -195,19 +224,19 @@ local OSPPhase1 = {
   [16] = {        
     TargetName = "RED SAM SA-13-4",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-13 SAM Site located North of Chargali\nGrid MM99",
+    TargetBriefing = "Destroy the SA-13 SAM Site located East of Pokvesh\nGrid GH14",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [17] = {        
     TargetName = "RED SAM SA-13-3",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-13 SAM Site located North of Tbilisi-Lochini Airfield\nGrid MM91",
+    TargetBriefing = "Destroy the SA-13 SAM Site located West of Korbouli\nGrid LM77",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   } ,
   [18] = {        
     TargetName = "RED SAM SA-13-2",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-13 SAM Site located West of Gori\nGrid MM24",
+    TargetBriefing = "Destroy the SA-13 SAM Site located Northeast of Grigalati\nGrid LM66",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [19] = {        
@@ -225,29 +254,67 @@ local OSPPhase1 = {
 
   }
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-local OSPPhase2 = { 
+  
+OPWestPhase1 = UTILS.ShuffleTable(OPWestPhase1)
+
+local OPWestPhase1Targets = {}
+for i=1,20 do
+  if OPWestPhase1[i].TargetStatic then
+    -- static
+    OPWestPhase1Targets[i] = TARGET:New(STATIC:FindByName(OPWestPhase1[i].TargetName))
+  else
+    -- group
+    OPWestPhase1Targets[i] = TARGET:New(GROUP:FindByName(OPWestPhase1[i].TargetName))
+  end
+end
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+local WestPhase1Operation = OPERATION:New("Operation Sleeping Phoenix West/Phase 1")
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+for i=1,20 do
+  -- Add Phases
+  local phase = WestPhase1Operation:AddPhase(i)
+  -- Add condition over
+  WestPhase1Operation:AddPhaseConditonOverAll(phase,
+  function(target)
+    local Target = target -- Ops.Target#TARGET
+    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
+      return true
+    else
+     return false
+    end 
+  end,OPWestPhase1Targets[i])
+end
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+WestPhase1Operation:__Start(20)
+  
+  
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+local OPWestPhase2 = { 
   [1] = {       
     TargetName = "RED ARMOR-21",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Unit located at Grozneft\nGrid EJ08",
+    TargetBriefing = "Destroy the Armor Unit located at Bzyb\nGrid FH18",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [2] = {       
-    TargetName = "RED ARTILLERY-15",
+    TargetName = "RED ARTILLERY-14",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Unit located at Grozneft\nGrid EJ08",
+    TargetBriefing = "Destroy the Artillery Unit located at Nizh. Teberda\nGrid GJ33",
     TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [3] = {       
     TargetName = "RED ARTILLERY-10",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Unit located NorthEast of Maykop-Khanskaya Airfield\nGrid EK85",
+    TargetBriefing = "Destroy the Artillery Unit located at Navaginka\nGrid EJ52",
     TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [4] = {       
     TargetName = "RED ARMOR-8",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Unit located West of Maykop-Khanskaya Airfield\nGrid EK84",
+    TargetBriefing = "Destroy the Armor Unit located at Vardane\nGrid EJ44",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [5] = {       
@@ -305,10 +372,10 @@ local OSPPhase2 = {
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [14] = {        
-    TargetName = "RED SAM SA-8-6",
+    TargetName = "RED EWR-2",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-8 SAM Site located at Gaudata Airfield\nGrid FH27",
-    TargetAuftrag = AUFTRAG.Type.SEAD,
+    TargetBriefing = "Destroy the Early Warning Radar Site South of Arhyz\nGrid FJ81",
+    TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [15] = {        
     TargetName = "RED ARTILLERY-7",
@@ -331,7 +398,7 @@ local OSPPhase2 = {
   [18] = {        
     TargetName = "RED ARMOR-7",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Chlou\nGrid GH04",
+    TargetBriefing = "Destroy the Armor Units located at Kochara\nGrid GH04",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [19] = {        
@@ -343,83 +410,118 @@ local OSPPhase2 = {
   [20] = {        
     TargetName = "RED SAM SA-8-1",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-8 SAM Site located south of Baglan\nGrid FH74",
+    TargetBriefing = "Destroy the SA-8 SAM Site located West of Varcha\nGrid FH74",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
 
 }
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-local OSPPhase3 = { 
+
+OPWestPhase2 = UTILS.ShuffleTable(OPWestPhase2)
+
+local OPWestPhase2Targets = {}
+for i=1,20 do
+  if OPWestPhase2[i].TargetStatic then
+    -- static
+    OPWestPhase2Targets[i] = TARGET:New(STATIC:FindByName(OPWestPhase2[i].TargetName))
+  else
+    -- group
+    OPWestPhase2Targets[i] = TARGET:New(GROUP:FindByName(OPWestPhase2[i].TargetName))
+  end
+end
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+local WestPhase2Operation = OPERATION:New("Operation Sleeping Phoenix West/Phase 2")
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+for i=1,20 do
+  -- Add Phases
+  local phase = WestPhase2Operation:AddPhase(i)
+  -- Add condition over
+  WestPhase2Operation:AddPhaseConditonOverAll(phase,
+  function(target)
+    local Target = target -- Ops.Target#TARGET
+    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
+      return true
+    else
+     return false
+    end 
+  end,OPWestPhase2Targets[i])
+end
+
+--WestPhase2Operation:__Start(20)
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+local OPEastPhase1 = { 
   [1] = {       
     TargetName = "RED ARMOR-24",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Pyatigorsk\nGrid LP47",
+    TargetBriefing = "Destroy the Armor Units located North of Agara\nGrid MM05",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [2] = {       
     TargetName = "RED ARMOR-16",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Mineralnye-Vody\nGrid LP59",
+    TargetBriefing = "Destroy the Armor Units located North of Gori\nGrid MM25",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [3] = {       
     TargetName = "RED ARTILLERY-3",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Mineralnye-Vody\nGrid LP59",
+    TargetBriefing = "Destroy the Artillery Units located North of Kashuri\nGrid LM85",
     TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [4] = {       
     TargetName = "RED SAM SA-8-5",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-8 SAM Site located at Mineralnye-Vody\nGrid LP49",
+    TargetBriefing = "Destroy the SA-8 SAM Site located at North of Alagir\nGrid MN36",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [5] = {       
     TargetName = "RED SAM SA-13-6",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-13 SAM Site located at Mineralnye-Vody\nGrid LP49",
+    TargetBriefing = "Destroy the SA-13 SAM Site located West of Agara\nGrid MM05",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [6] = {       
     TargetName = "RED SAM SA-15-11",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-15 SAM Site located at Mineralnye-Vody\nGrid LP49",
+    TargetBriefing = "Destroy the SA-15 SAM Site located South of Nart\nGrid MN57",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [7] = {       
-    TargetName = "RED SAM SA-13-5",
+    TargetName = "RED ARTILLERY-21",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-13 SAM Site located at Novopavlovsk\nGrid LP96",
+    TargetBriefing = "Destroy the Artillery Units located West of Dzali\nGrid MM64",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [8] = {       
     TargetName = "RED ARMOR-17",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Hasan Ya\nGrid LP81",
+    TargetBriefing = "Destroy the Armor Units locatedEast of Tarskoye\nGrid MN95",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [9] = {       
-    TargetName = "RED SAM SA-15-10",
+    TargetName = "RED EWR-3",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-15 SAM Site located at Nalchik\nGrid LP91",
+    TargetBriefing = "Destroy the Early Warning Radar Site East of Kazbegi\nGrid MN72",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [10] = {        
-    TargetName = "RED SAM SA-8-4",
+    TargetName = "RED ARMOR-29",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-8 SAM Site located at Nalchik\nGrid LP81",
+    TargetBriefing = "Destroy the Armor Units located at Karabulak\nGrid MN99",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [11] = {        
     TargetName = "RED ARMOR-20",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Aleksandrovskaya\nGrid MP21",
+    TargetBriefing = "Destroy the Armor Units located East of Dusheri\nGrid MM75",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [12] = {        
-    TargetName = "RED ARMOR-20",
+    TargetName = "RED ARMOR-28",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Vladikavkaz\nGrid MN76",
+    TargetBriefing = "Destroy the Armor Units located at Leningori\nGrid MM56",
     TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [13] = {        
@@ -453,325 +555,265 @@ local OSPPhase3 = {
     TargetAuftrag = AUFTRAG.Type.CAS,
   } ,
   [18] = {        
-    TargetName = "RED SAM SA-13-1",
+    TargetName = "RED ARMOR-18",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-13 SAM Site located at Mozdok Airfield\nGrid MP64",
-    TargetAuftrag = AUFTRAG.Type.SEAD,
+    TargetBriefing = "Destroy the Armor Units located at Tskhinvali\nGrid MM17",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [19] = {        
+    TargetName = "RED COMMAND TRUCKS-4",
+    TargetStatic = false,
+    TargetBriefing = "Destroy the Command Vehicles located at Karaleti\nGrid MM25",
+    TargetAuftrag = AUFTRAG.Type.SEAD,
+  },
+  [20] = {        
+    TargetName = "RED ARMOR-15",
+    TargetStatic = false,
+    TargetBriefing = "Destroy the Armor Units located at Vladikavkaz\nGrid MN76",
+    TargetAuftrag = AUFTRAG.Type.CAS,
+  },
+
+}
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+OPEastPhase1 = UTILS.ShuffleTable(OPEastPhase1)
+
+local OPEastPhase1Targets = {}
+for i=1,20 do
+  if OPEastPhase1[i].TargetStatic then
+    -- static
+    OPEastPhase1Targets[i] = TARGET:New(STATIC:FindByName(OPEastPhase1[i].TargetName))
+  else
+    -- group
+    OPEastPhase1Targets[i] = TARGET:New(GROUP:FindByName(OPEastPhase1[i].TargetName))
+  end
+end
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+local EastPhase1Operation = OPERATION:New("Operation Sleeping Phoenix East/Phase 1")
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+for i=1,20 do
+  -- Add Phases
+  local phase = EastPhase1Operation:AddPhase(i)
+  -- Add condition over
+  EastPhase1Operation:AddPhaseConditonOverAll(phase,
+  function(target)
+    local Target = target -- Ops.Target#TARGET
+    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
+      return true
+    else
+     return false
+    end 
+  end,OPEastPhase1Targets[i])
+end
+
+EastPhase1Operation:__Start(25)
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+local OPEastPhase2 = { 
+  [1] = {       
+    TargetName = "RED SAM SA-15-10",
+    TargetStatic = false,
+    TargetBriefing = "Destroy the SA-15 SAM Site located at Nalchik Airfield\nGrid LP91",
+    TargetAuftrag = AUFTRAG.Type.SEAD,
+  },
+  [2] = {       
     TargetName = "RED SAM SA-15-12",
     TargetStatic = false,
     TargetBriefing = "Destroy the SA-15 SAM Site located at Mozdok Airfield\nGrid MP64",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
-  [20] = {        
-    TargetName = "RED ARTILLERY-4",
-    TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Mozdok\nGrid MP74",
-    TargetAuftrag = AUFTRAG.Type.BOMBING,
-  },
-
-}
---///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-local OSPPhase4 = { 
-  [1] = {       
-    TargetName = "RED ARMOR-27",
-    TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Saratovsky\nGrid EK69",
-    TargetAuftrag = AUFTRAG.Type.CAS,
-  },
-  [2] = {       
-    TargetName = "RED ARMOR-12",
-    TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at UST Labinsk\nGrid EL50",
-    TargetAuftrag = AUFTRAG.Type.CAS,
-  },
   [3] = {       
-    TargetName = "RED ARMOR-11",
+    TargetName = "RED SAM SA-15-13",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Starokorsunskaya\nGrid EK28",
-    TargetAuftrag = AUFTRAG.Type.CAS,
+    TargetBriefing = "Destroy the SA-15 SAM Site located at Mineralnye-Vody Airfield\nGrid LP49",
+    TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [4] = {       
-    TargetName = "RED ARTILLERY-11",
+    TargetName = "RED EWR-4",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Starokorsunskaya\nGrid EK28",
+    TargetBriefing = "Destroy the Early Warning Radar Site located at Mineralnye-Vody Airfield\nGrid LQ31",
     TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [5] = {       
-    TargetName = "RED ARMOR-10",
+    TargetName = "RED SAM SA-8-4",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Krasnodar-Center\nGrid DK98",
-    TargetAuftrag = AUFTRAG.Type.CAS,
+    TargetBriefing = "Destroy the SA-8 SAM Site located at Mineralnye-Vody Airfield\nGrid LQ40",
+    TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [6] = {       
-    TargetName = "RED SAM SA-15-1",
+    TargetName = "RED SAM SA-8-10",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-15 SAM Site located at Krasnodar-Center\nGrid DK99",
+    TargetBriefing = "Destroy the SA-8 SAM Site located at Mozdok\nGrid MP74",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [7] = {       
-    TargetName = "RED SAM SA-2-1",
+    TargetName = "RED SAM SA-8-11",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-2 SAM Site located at Krymsk\nGrid DK27",
+    TargetBriefing = "Destroy the SA-8 SAM Site located at Nalchik Airfield\nGrid LP91",
     TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [8] = {       
-    TargetName = "RED ARTILLERY-12",
+    TargetName = "RED SAM SA-2-3",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Krymsk\nGrid DK27",
-    TargetAuftrag = AUFTRAG.Type.BOMBING,
+    TargetBriefing = "Destroy the SA-2 SAM Site located at Mineralnye-Vody Airfield\nGrid LQ40",
+    TargetAuftrag = AUFTRAG.Type.SEAD,
   },
   [9] = {       
-    TargetName = "RED ARTILLERY-19",
+    TargetName = "RED COMMAND TRUCKS-5",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Krymsk\nGrid DK17",
-    TargetAuftrag = AUFTRAG.Type.BOMBING,
+    TargetBriefing = "Destroy the Command and Supply Units located at Nalchik\nGrid LP81",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [10] = {        
-    TargetName = "RED ARTILLERY-14",
+    TargetName = "RED ARMOR-30",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Novominaylovsky\nGrid DK80",
-    TargetAuftrag = AUFTRAG.Type.BOMBING,
+    TargetBriefing = "Destroy the Armor Units located at Znamenka\nGrid KP69",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [11] = {        
-    TargetName = "RED ARTILLERY-16",
+    TargetName = "RED ARMOR-31",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Dzhubga\nGrid DK70",
-    TargetAuftrag = AUFTRAG.Type.BOMBING,
+    TargetBriefing = "Destroy the Armor Units located at Energetik\nGrid LP48",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [12] = {        
-    TargetName = "RED ARTILLERY-26",
+    TargetName = "RED ARMOR-32",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Armor Units located at Defanovka\nGrid DK81",
-    TargetAuftrag = AUFTRAG.Type.BOMBING,
+    TargetBriefing = "Destroy the Armor Units located at Nalchik\nGrid LP81",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [13] = {        
-    TargetName = "RED SAM SA-15-4",
+    TargetName = "RED ARMOR-33",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-15 SAM Site located at Divnomorskoe\nGrid DK32",
-    TargetAuftrag = AUFTRAG.Type.SEAD,
+    TargetBriefing = "Destroy the Armor Units located at Mozdok\nGrid MP64",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [14] = {        
-    TargetName = "RED SAM SA-8-8",
+    TargetName = "RED ARMOR-34",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-8 SAM Site located at Gelendzhik\nGrid DK23",
-    TargetAuftrag = AUFTRAG.Type.SEAD,
+    TargetBriefing = "Destroy the Armor Units located at Novopavlovsk\nGrid LP96",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [15] = {        
-    TargetName = "RED SAM SA-15-3",
+    TargetName = "RED ARMOR-35",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-15 SAM Site located at Novorossiysk\nGrid DK04",
-    TargetAuftrag = AUFTRAG.Type.SEAD,
+    TargetBriefing = "Destroy the Armor Units located at Bekeshevskaya\nGrid KP98",
+    TargetAuftrag = AUFTRAG.Type.CAS,
   },
   [16] = {        
-    TargetName = "RED SAM SA-8-9",
+    TargetName = "RED ARTILLERY-4",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-8 SAM Site located at Anapa\nGrid CK68",
-    TargetAuftrag = AUFTRAG.Type.SEAD,
+    TargetBriefing = "Destroy the Artillery Units located north of Shithala\nGrid MP02",
+    TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [17] = {        
-    TargetName = "RED SAM SA-15-2",
+    TargetName = "RED ARTILLERY-22",
     TargetStatic = false,
-    TargetBriefing = "Destroy the SA-15 SAM Site located at Varvarovka\nGrid CK76",
-    TargetAuftrag = AUFTRAG.Type.SEAD,
+    TargetBriefing = "Destroy the Artillery Units located at Russkoye\nGrid MP65",
+    TargetAuftrag = AUFTRAG.Type.BOMBING,
   } ,
   [18] = {        
-    TargetName = "RED ARTILLERY-18",
+    TargetName = "RED ARTILLERY-23",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Varvarovka\nGrid CK76",
+    TargetBriefing = "Destroy the Artillery Units located at Kichmalka\nGrid LP35",
     TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [19] = {        
-    TargetName = "RED ARTILLERY-13",
+    TargetName = "RED ARTILLERY-24",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Vozrozhdenie\nGrid DK33",
+    TargetBriefing = "Destroy the Artillery Units located at Baksan\nGrid LP83",
     TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
   [20] = {        
-    TargetName = "RED ARTILLERY-17",
+    TargetName = "RED COMMAND TRUCKS-5",
     TargetStatic = false,
-    TargetBriefing = "Destroy the Artillery Units located at Gelendzhik\nGrid DK23",
+    TargetBriefing = "Destroy the Command and Supply Units located at Kislovodsk\nGrid LP16",
     TargetAuftrag = AUFTRAG.Type.BOMBING,
   },
 
 }
-
-
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
--- TODO Randomize mission setup and create TARGET objects
---///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-OSPPhase1 = UTILS.ShuffleTable(OSPPhase1)
 
-local OSPPhase1Targets = {}
+local OPEastPhase2Targets = {}
 for i=1,20 do
-  if OSPPhase1[i].TargetStatic then
+  if OPEastPhase2[i].TargetStatic then
     -- static
-    OSPPhase1Targets[i] = TARGET:New(STATIC:FindByName(OSPPhase1[i].TargetName))
+    OPEastPhase2Targets[i] = TARGET:New(STATIC:FindByName(OPEastPhase2[i].TargetName))
   else
     -- group
-    OSPPhase1Targets[i] = TARGET:New(GROUP:FindByName(OSPPhase1[i].TargetName))
+    OPEastPhase2Targets[i] = TARGET:New(GROUP:FindByName(OPEastPhase2[i].TargetName))
   end
 end
-
-OSPPhase2 = UTILS.ShuffleTable(OSPPhase2)
-
-local OSPPhase2Targets = {}
-for i=1,20 do
-  if OSPPhase2[i].TargetStatic then
-    -- static
-    OSPPhase2Targets[i] = TARGET:New(STATIC:FindByName(OSPPhase2[i].TargetName))
-  else
-    -- group
-    OSPPhase2Targets[i] = TARGET:New(GROUP:FindByName(OSPPhase2[i].TargetName))
-  end
-end
-
-OSPPhase3 = UTILS.ShuffleTable(OSPPhase3)
-
-local OSPPhase3Targets = {}
-for i=1,20 do
-  if OSPPhase3[i].TargetStatic then
-    -- static
-    OSPPhase3Targets[i] = TARGET:New(STATIC:FindByName(OSPPhase3[i].TargetName))
-  else
-    -- group
-    OSPPhase3Targets[i] = TARGET:New(GROUP:FindByName(OSPPhase3[i].TargetName))
-  end
-end
-
-local OSPPhase4Targets = {}
-for i=1,20 do
-  if OSPPhase4[i].TargetStatic then
-    -- static
-    OSPPhase4Targets[i] = TARGET:New(STATIC:FindByName(OSPPhase4[i].TargetName))
-  else
-    -- group
-    OSPPhase4Targets[i] = TARGET:New(GROUP:FindByName(OSPPhase4[i].TargetName))
-  end
-end
-
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
--- TODO Setup OPERATION to steer through the tasks
---///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-local OSPPhase1Op = OPERATION:New("Operation Sleeping Phoenix Chapter 1")
-local OSPPhase2Op = OPERATION:New("Operation Sleeping Phoenix Chapter 2")
-local OSPPhase3Op = OPERATION:New("Operation Sleeping Phoenix Chapter 3")
-local OSPPhase4Op = OPERATION:New("Operation Sleeping Phoenix Chapter 4")
 
+local EastPhase2Operation = OPERATION:New("Operation Sleeping Phoenix East/Phase 2")
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+
+for i=1,20 do
+  -- Add Phases
+  local phase = EastPhase2Operation:AddPhase(i)
+  -- Add condition over
+  EastPhase2Operation:AddPhaseConditonOverAll(phase,
+  function(target)
+    local Target = target -- Ops.Target#TARGET
+    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
+      return true
+    else
+     return false
+    end 
+  end,OPEastPhase2Targets[i])
+end
+
+--EastPhase2Operation:__Start(25)
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 
 if DEBUG then
-  OSPPhase1Op.verbose = 1
-  OSPPhase2Op.verbose = 1
-  OSPPhase3Op.verbose = 1
-  OSPPhase4Op.verbose = 1
+  WestPhase1Operation.verbose = 1
+  WestPhase2Operation.verbose = 1
+  EastPhase1Operation.verbose = 1
+  EastPhase2Operation.verbose = 1
 end
-
---///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
--- TODO Add Operation Phases and build target lists
---///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-for i=1,20 do
-  -- Add Phases
-  local phase = OSPPhase1Op:AddPhase(i)
-  -- Add condition over
-  OSPPhase1Op:AddPhaseConditonOverAll(phase,
-  function(target)
-    local Target = target -- Ops.Target#TARGET
-    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
-      return true
-    else
-     return false
-    end 
-  end,OSPPhase1Targets[i])
-end
-
-for i=1,20 do
-  -- Add Phases
-  local phase = OSPPhase2Op:AddPhase(i)
-  -- Add condition over
-  OSPPhase2Op:AddPhaseConditonOverAll(phase,
-  function(target)
-    local Target = target -- Ops.Target#TARGET
-    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
-      return true
-    else
-     return false
-    end 
-  end,OSPPhase2Targets[i])
-end
-
-for i=1,20 do
-  -- Add Phases
-  local phase = OSPPhase3Op:AddPhase(i)
-  -- Add condition over
-  OSPPhase3Op:AddPhaseConditonOverAll(phase,
-  function(target)
-    local Target = target -- Ops.Target#TARGET
-    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
-      return true
-    else
-     return false
-    end 
-  end,OSPPhase3Targets[i])
-end
-
-for i=1,20 do
-  -- Add Phases
-  local phase = OSPPhase4Op:AddPhase(i)
-  -- Add condition over
-  OSPPhase4Op:AddPhaseConditonOverAll(phase,
-  function(target)
-    local Target = target -- Ops.Target#TARGET
-    if Target:IsDead() or Target:IsDestroyed() or Target:CountTargets() == 0 then
-      return true
-    else
-     return false
-    end 
-  end,OSPPhase4Targets[i])
-end
-
--- start operation
-OSPPhase1Op:__Start(30)
 
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- TODO A2G Strike Support
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 local FlightLock = timer.getTime() - AirSupportInterval
 
-function CallAirSupport()
+function CallAirSupportWest()
   local TNow = timer.getTime()
   if TNow-FlightLock > AirSupportInterval then
     FlightLock = timer.getTime()
     -- Get Current Target
-    local phase = CurrentOperation:GetPhaseActive()
+    local phase = WestOperation:GetPhaseActive()
     if not phase then
       MESSAGE:New("Strike Bombers Unable To Locate Target",15,"Phoenix"):ToBlue()
       return 
     end
     local ind = phase.name
-    local type = CurrentMissions[ind].TargetAuftrag
-    local brief = CurrentMissions[ind].TargetBriefing
-    local IsStatic = CurrentMissions[ind].TargetStatic
-    local Name = CurrentMissions[ind].TargetName
+    local type = WestMissions[ind].TargetAuftrag
+    local brief = WestMissions[ind].TargetBriefing
+    local IsStatic = WestMissions[ind].TargetStatic
+    local Name = WestMissions[ind].TargetName
     local Target = nil
     if IsStatic then
       Target = STATIC:FindByName(Name)
     else
       Target = GROUP:FindByName(Name)
     end
-    auftrag = nil
+    auftragwest = nil
     if type == AUFTRAG.Type.CAS then
       local CasZone = ZONE_RADIUS:New(Name,Target:GetVec2(),500)
-      auftrag = AUFTRAG:NewCASENHANCED(CasZone,nil,350,10,nil,{"Ground Units"})
+      auftragwest = AUFTRAG:NewCASENHANCED(CasZone,nil,350,10,nil,{"Ground Units"})
     elseif type == AUFTRAG.Type.BOMBING then
-      auftrag = AUFTRAG:NewBOMBING(Target)
-      auftrag:SetWeaponExpend(AI.Task.WeaponExpend.ALL)
-      auftrag:SetMissionSpeed(350)
+      auftragwest = AUFTRAG:NewBOMBING(Target)
+      auftragwest:SetWeaponExpend(AI.Task.WeaponExpend.ALL)
+      auftragwest:SetMissionSpeed(350)
     elseif type == AUFTRAG.Type.SEAD then
-      auftrag = AUFTRAG:NewSEAD(Target)
-      auftrag:SetMissionSpeed(350)
+      auftragwest = AUFTRAG:NewSEAD(Target)
+      auftragwest:SetMissionSpeed(350)
     end
-    if auftrag then
+    if auftragwest then
       local flight = SPAWN:NewWithAlias(AirSupportTemplate,AirSupportTemplate.."-"..math.random(10,10000))
       flight:InitCleanUp(120)
       flight:OnSpawnGroup(
@@ -780,7 +822,7 @@ function CallAirSupport()
           FG:SetDefaultRadio(254,radio.modulation.AM,true)
           FG:SetDespawnAfterLanding()
           FG:SetFuelLowRTB(true)
-          FG:AddMission(auftrag)
+          FG:AddMission(auftragwest)
           MESSAGE:New("Strike Bombers Launched",15,"Phoenix"):ToBlue()
           PhoenixSRS:PlayText("Phoenix to all stations. Strike Bombers Launched",1)
           --USERSOUND:New("Lets Go Get Em.ogg"):ToCoalition(coalition.side.BLUE)
@@ -791,7 +833,7 @@ function CallAirSupport()
           function FG:onafterHolding()
             FG:ClearToLand(2)
           end
-          function auftrag:OnAfterExecuting()
+          function auftragwest:OnAfterExecuting()
             MESSAGE:New("The Strike Bomber Flight Reports Target Coordinates Are Locked In And They Are Engaging!",15,"Phoenix"):ToBlue()
             PhoenixSRS:PlayText("Phoenix to all stations. The Strike Bomber Flight Reports Target Coordinates Are Locked In And They Are Engaging!",1)
           end    
@@ -805,7 +847,76 @@ function CallAirSupport()
   end
 end
 
-local support = MENU_COALITION_COMMAND:New(coalition.side.BLUE,"Request Support",menu,CallAirSupport)
+local support = MENU_COALITION_COMMAND:New(coalition.side.BLUE,"Request Support - West",menu2,CallAirSupportWest)
+
+function CallAirSupportEast()
+  local TNow = timer.getTime()
+  if TNow-FlightLock > AirSupportInterval then
+    FlightLock = timer.getTime()
+    -- Get Current Target
+    local phase = EastOperation:GetPhaseActive()
+    if not phase then
+      MESSAGE:New("Strike Bombers Unable To Locate Target",15,"Phoenix"):ToBlue()
+      return 
+    end
+    local ind = phase.name
+    local type = EastMissions[ind].TargetAuftrag
+    local brief = EastMissions[ind].TargetBriefing
+    local IsStatic = EastMissions[ind].TargetStatic
+    local Name = EastMissions[ind].TargetName
+    local Target = nil
+    if IsStatic then
+      Target = STATIC:FindByName(Name)
+    else
+      Target = GROUP:FindByName(Name)
+    end
+    auftrageast = nil
+    if type == AUFTRAG.Type.CAS then
+      local CasZone = ZONE_RADIUS:New(Name,Target:GetVec2(),500)
+      auftrageast = AUFTRAG:NewCASENHANCED(CasZone,nil,350,10,nil,{"Ground Units"})
+    elseif type == AUFTRAG.Type.BOMBING then
+      auftrageast = AUFTRAG:NewBOMBING(Target)
+      auftrageast:SetWeaponExpend(AI.Task.WeaponExpend.ALL)
+      auftrageast:SetMissionSpeed(350)
+    elseif type == AUFTRAG.Type.SEAD then
+      auftrageast = AUFTRAG:NewSEAD(Target)
+      auftrageast:SetMissionSpeed(350)
+    end
+    if auftrageast then
+      local flight = SPAWN:NewWithAlias(AirSupportTemplate,AirSupportTemplate.."-"..math.random(10,10000))
+      flight:InitCleanUp(120)
+      flight:OnSpawnGroup(
+        function(group)
+          local FG = FLIGHTGROUP:New(group)
+          FG:SetDefaultRadio(254,radio.modulation.AM,true)
+          FG:SetDespawnAfterLanding()
+          FG:SetFuelLowRTB(true)
+          FG:AddMission(auftrageast)
+          MESSAGE:New("Strike Bombers Launched",15,"Phoenix"):ToBlue()
+          PhoenixSRS:PlayText("Phoenix to all stations. Strike Bombers Launched",1)
+          --USERSOUND:New("Lets Go Get Em.ogg"):ToCoalition(coalition.side.BLUE)
+          function FG:OnAfterRTB()    
+            MESSAGE:New("Strike Bombers Are Returning To Base",15,"Phoenix"):ToBlue()
+            PhoenixSRS:PlayText("Phoenix to all stations. Strike Bombers Are R.T.B",1)
+          end
+          function FG:onafterHolding()
+            FG:ClearToLand(2)
+          end
+          function auftrageast:OnAfterExecuting()
+            MESSAGE:New("The Strike Bomber Flight Reports Target Coordinates Are Locked In And They Are Engaging!",15,"Phoenix"):ToBlue()
+            PhoenixSRS:PlayText("Phoenix to all stations. The Strike Bomber Flight Reports Target Coordinates Are Locked In And They Are Engaging!",1)
+          end    
+        end
+      )
+      flight:SpawnAtAirbase(AIRBASE:FindByName(AIRBASE.Caucasus.Senaki_Kolkhi),SPAWN.Takeoff.Hot,nil,nil,true,nil)
+    end
+  else
+    MESSAGE:New("Strike Bombers Are Currently Active, Further Support Is Unavailable",15,"Phoenix"):ToBlue()
+    PhoenixSRS:PlayText("Phoenix to all stations. Strike Bombers Are Currently Active, Further Support Is Unavailable",1)
+  end
+end
+
+local support2 = MENU_COALITION_COMMAND:New(coalition.side.BLUE,"Request Support - East",menu2,CallAirSupportEast)
 
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- Navy
@@ -1007,7 +1118,7 @@ RedTANKER01 = AUFTRAG:NewTANKER(ZONE:FindByName("RedTankerZone"):GetRandomPointV
 --RED CHIEF SETUP
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 local RedChief = CHIEF:New("red",RedDetectionSet,"RedChief") --Ops.Chief#CHIEF
-RedChief:SetBorderZones(RedBorder1)
+RedChief:SetBorderZones(RedEngageSet)
 RedChief:SetResponseOnTarget(1,2,1,TARGET.Category.AIRCRAFT)
 RedChief:SetResponseOnTarget(2,4,4,TARGET.Category.AIRCRAFT)
 RedChief:SetStrategy(CHIEF.Strategy.DEFENSIVE)
@@ -1330,7 +1441,7 @@ BlueChief:AddAirwing(BlueAirWing2)
 BlueChief:AddAirwing(BlueFordAirwing)
 BlueChief:AddAirwing(BlueErieAirwing)
 BlueChief:AddAirwing(BlueRooseveltAirwing)
-BlueChief:SetBorderZones(BlueBorder1)
+BlueChief:SetBorderZones(BlueEngageSet)
 BlueChief:AddMission(BlueGCICAP01)
 BlueChief:AddMission(BlueGCICAP02)
 BlueChief:AddMission(BlueAWACS01)
@@ -1349,62 +1460,65 @@ BlueChief:__Start(10)
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- TODO Operation start and phase changes
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
-CurrentOperation = OSPPhase1Op
-CurrentMissions = OSPPhase1
-CurrentTargets = OSPPhase1Targets
+WestOperation = WestPhase1Operation
+EastOperation = EastPhase1Operation
+WestMissions = OPWestPhase1
+EastMissions = OPEastPhase1
+WestTargets = OPWestPhase1Targets
+EastTargets = OPEastPhase1Targets
 
 
-function OSPPhase1Op:OnAfterStart(From,Event,To)
-    MESSAGE:New("Operation Sleeping Phoenix Started!",15,"Phoenix"):ToBlue()
-    PhoenixSRS:PlayText("Operation Sleeping Phoenix Started",1)
+function WestPhase1Operation:OnAfterStart(From,Event,To)
+    MESSAGE:New("Operation Sleeping Phoenix West Phase 1 Started!",15,"Phoenix"):ToBlue()
+    PhoenixSRS:PlayText("Operation Sleeping Phoenix West Phase 1 Started!",1)
 end
 
-function OSPPhase2Op:OnAfterStart(From,Event,To)
-    MESSAGE:New("Mission Progress - Operation Sleeping Phoenix is now in Region 2!",15,"Phoenix"):ToBlue()
-    PhoenixSRS:PlayText("Mission Progress - Operation Sleeping Phoenix is now in Region 2!",1)
+function WestPhase2Operation:OnAfterStart(From,Event,To)
+    MESSAGE:New("Mission Progress - Operation Sleeping Phoenix West Phase 2 Started!",15,"Phoenix"):ToBlue()
+    PhoenixSRS:PlayText("Mission Progress - Operation Sleeping Phoenix West Phase 2 Started!",1)
 end
 
-function OSPPhase3Op:OnAfterStart(From,Event,To)
-    MESSAGE:New("Mission Progress - Operation Sleeping Phoenix is now in Region 3!",15,"Phoenix"):ToBlue()
-    PhoenixSRS:PlayText("Mission Progress - Operation Sleeping Phoenix is now in Region 3!",1)
+function EastPhase1Operation:OnAfterStart(From,Event,To)
+    MESSAGE:New("Operation Sleeping Phoenix East Phase 1 Started!",15,"Phoenix"):ToBlue()
+    PhoenixSRS:PlayText("Operation Sleeping Phoenix East Phase 1 Started!",1)
 end
 
-function OSPPhase4Op:OnAfterStart(From,Event,To)
-    MESSAGE:New("Mission Progress - Operation Sleeping Phoenix is now in Region 4!",15,"Phoenix"):ToBlue()
-    PhoenixSRS:PlayText("Mission Progress - Operation Sleeping Phoenix is now in Region 4!",1)
+function EastPhase2Operation:OnAfterStart(From,Event,To)
+    MESSAGE:New("Mission Progress - Operation Sleeping Phoenix East Phase 2 Started!",15,"Phoenix"):ToBlue()
+    PhoenixSRS:PlayText("Mission Progress - Operation Sleeping Phoenix East Phase 2 Started!",1)
 end
 
 
 ---Check current operation and set on phase change and playertask update
 -- next phase
-function CurrentOperation:OnAfterPhaseChange(From,Event,To,Phase)
+function WestOperation:OnAfterPhaseChange(From,Event,To,Phase)
   -- Next phase, this is Phase done
-  local phase = CurrentOperation:GetPhaseActive()
+  local phase = WestOperation:GetPhaseActive()
   local ind = phase.name
-  local type = CurrentMissions[ind].TargetAuftrag
-  local brief = CurrentMissions[ind].TargetBriefing
-  local targetname = CurrentMissions[ind].TargetName
+  local type = WestMissions[ind].TargetAuftrag
+  local brief = WestMissions[ind].TargetBriefing
+  local targetname = WestMissions[ind].TargetName
   local targetgroup = GROUP:FindByName(targetname)
     if DEBUG then
-      CurrentTargets[ind].verbose = 3
+      WestTargets[ind].verbose = 3
     end
-  local task = PLAYERTASK:New(type,CurrentTargets[ind],true,99,type)
+  local task = PLAYERTASK:New(type,WestTargets[ind],true,99,type)
   task:AddFreetext(brief)
     if DEBUG then
       task.verbose = true
     end
-  phoenixtasking:AddPlayerTaskToQueue(task)
+  phoenixwesttasking:AddPlayerTaskToQueue(task)
   local file = "That Is Our Target.ogg"
   local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
-  local name = CurrentOperation.name
-  local phasesremain = tostring(CurrentOperation:CountPhases(OPERATION.PhaseStatus.ACTIVE) + CurrentOperation:CountPhases(OPERATION.PhaseStatus.PLANNED))
+  local name = WestOperation.name
+  local phasesremain = tostring(WestOperation:CountPhases(OPERATION.PhaseStatus.ACTIVE) + WestOperation:CountPhases(OPERATION.PhaseStatus.PLANNED))
   local threatlevel = targetgroup:GetThreatLevel()
   local ThreatGraph = "[" .. string.rep(  "■", threatlevel ) .. string.rep(  "□", 10 - threatlevel ) .. "]: "..threatlevel
   local targetcoord = targetgroup:GetCoordinate()
   local targetmgrs = targetcoord:ToStringMGRS()
   local targetllddm = targetcoord:ToStringLLDDM()
   local embed = {}
-  embed.title = "Operation Sleeping Phoenix"
+  embed.title = "Operation Sleeping Phoenix West Region"
   embed.description = "Mission Status Report"
   embed.img = "https://cdn.discordapp.com/avatars/1034319512205545482/8632aaac3c14618467edcfeded166047.png"
   embed.fields = {}
@@ -1447,99 +1561,113 @@ function CurrentOperation:OnAfterPhaseChange(From,Event,To,Phase)
   dcsbot.updateEmbed('OSPStatus', embed.title, embed.description, embed.img, embed.fields, embed.footer,"1040466446842593371")  
   
 end
---function UpdateDiscord()
---  
---  local name = CurrentOperation.name
---  local phasesremain = tostring(CurrentOperation:CountPhases(OPERATION.PhaseStatus.ACTIVE) + CurrentOperation:CountPhases(OPERATION.PhaseStatus.PLANNED))
---  local phase = CurrentOperation:GetPhaseActive()
---  local ind = phase.name
---  local type = CurrentMissions[ind].TargetAuftrag
---  local brief = CurrentMissions[ind].TargetBriefing
---  local coordinates = CurrentTargets[ind].GetCoordinate(self)
---  local threatlevel = CurrentTargets[ind].GetThreatLevelMax(self)
---  local ThreatGraph = "[" .. string.rep(  "■", threatlevel ) .. string.rep(  "□", 10 - threatlevel ) .. "]: "..threatlevel
---  local targetmgrs = coordinates:ToStringMGRS()
---  local targetllddm = coordinates:ToStringLLDDM()
---  local embed = {}
---  embed.title = "Operation Sleeping Phoenix"
---  embed.description = "Mission Status Report"
---  embed.img = "https://cdn.discordapp.com/avatars/1034319512205545482/8632aaac3c14618467edcfeded166047.png"
---  embed.fields = {}
---    local field1 = {}
---    field1['name'] = 'Current Operation'
---    field1['value'] = name or "Unknown"
---    field1['inline'] = true
---    table.insert(embed.fields, field1)
---    local field2 = {}
---    field2['name'] = 'Current Mission'
---    field2['value'] = type or "Unknown"
---    field2['inline'] = true
---    table.insert(embed.fields, field2)
---    local field3 = {}
---    field3['name'] = 'Phases/Targets Remaining'
---    field3['value'] = phasesremain or "Unknown"
---    field3['inline'] = true
---    table.insert(embed.fields, field3)
---    local field4 = {}    
---    field4['name'] = 'Mission Briefing'
---    field4['value'] = brief or "Unknown"
---    field4['inline'] = false
---    table.insert(embed.fields, field4)
---    local field5 = {}    
---    field4['name'] = 'Threat Level'
---    field4['value'] = ThreatGraph or "Unknown"
---    field4['inline'] = true
---    table.insert(embed.fields, field5)
---    local field6 = {}    
---    field4['name'] = 'Target Coordinates'
---    field4['value'] = "MGRS "..targetmgrs
---    field4['inline'] = false
---    table.insert(embed.fields, field6)
---    local field7 = {}    
---    field4['name'] = 'Target Coordinates'
---    field4['value'] = "LLDDM "..targetllddm or "Unknown"
---    field4['inline'] = true
---    table.insert(embed.fields, field7)
---  embed.footer = "Join now and get in on the action!"
---  dcsbot.updateEmbed('OSPStatus', embed.title, embed.description, embed.img, embed.fields, embed.footer,"1040466446842593371")  
---end
---
---local discordupdate = TIMER:New(UpdateDiscord)
---discordupdate:Start(15,60)
----
--- Operation finished
-function OSPPhase1Op:OnAfterOver(From,Event,To,Phase)
-    MESSAGE:New("Operation Sleeping Phoenix - Operational Area Controlled /nRetasking Missions and Switching Operational Area /nSee F10 Map for Current Operational Area!",15,"Phoenix"):ToBlue()
-    PhoenixSRS:PlayText("Phoenix to all units, Operational Area Controlled, Retasking Missions and Switching Operational Area, See F10 Map for New Operational Area",1)
-    CurrentOperation = OSPPhase2Op
-    CurrentMissions = OSPPhase2
-    CurrentTargets = OSPPhase2Targets
-    OSPPhase1Op:Stop()
-    OSPPhase2Op:__Start(15)
-    RedChief:SetBorderZones(RedBorder2)
-    BlueChief:SetBorderZones(BlueBorder2)
+
+function EastOperation:OnAfterPhaseChange(From,Event,To,Phase)
+  -- Next phase, this is Phase done
+  local phase = EastOperation:GetPhaseActive()
+  local ind = phase.name
+  local type = EastMissions[ind].TargetAuftrag
+  local brief = EastMissions[ind].TargetBriefing
+  local targetname = EastMissions[ind].TargetName
+  local targetgroup = GROUP:FindByName(targetname)
+    if DEBUG then
+      EastTargets[ind].verbose = 3
+    end
+  local task = PLAYERTASK:New(type,EastTargets[ind],true,99,type)
+  task:AddFreetext(brief)
+    if DEBUG then
+      task.verbose = true
+    end
+  phoenixeasttasking:AddPlayerTaskToQueue(task)
+  local file = "That Is Our Target.ogg"
+  local radio = USERSOUND:New(file):ToCoalition(coalition.side.BLUE)
+  local name = EastOperation.name
+  local phasesremain = tostring(EastOperation:CountPhases(OPERATION.PhaseStatus.ACTIVE) + EastOperation:CountPhases(OPERATION.PhaseStatus.PLANNED))
+  local threatlevel = targetgroup:GetThreatLevel()
+  local ThreatGraph = "[" .. string.rep(  "■", threatlevel ) .. string.rep(  "□", 10 - threatlevel ) .. "]: "..threatlevel
+  local targetcoord = targetgroup:GetCoordinate()
+  local targetmgrs = targetcoord:ToStringMGRS()
+  local targetllddm = targetcoord:ToStringLLDDM()
+  local embed = {}
+  embed.title = "Operation Sleeping Phoenix West Region"
+  embed.description = "Mission Status Report"
+  embed.img = "https://cdn.discordapp.com/avatars/1034319512205545482/8632aaac3c14618467edcfeded166047.png"
+  embed.fields = {}
+    local field1 = {}
+    field1['name'] = 'Current Operation'
+    field1['value'] = name or "Unknown"
+    field1['inline'] = false
+    table.insert(embed.fields, field1)
+    local field2 = {}
+    field2['name'] = 'Current Mission'
+    field2['value'] = type or "Unknown"
+    field2['inline'] = false
+    table.insert(embed.fields, field2)
+    local field3 = {}
+    field3['name'] = 'Phases/Targets Remaining'
+    field3['value'] = phasesremain or "Unknown"
+    field3['inline'] = true
+    table.insert(embed.fields, field3)
+    local field4 = {}    
+    field4['name'] = 'Mission Briefing'
+    field4['value'] = brief or "Unknown"
+    field4['inline'] = false
+    table.insert(embed.fields, field4)
+    local field5 = {}    
+    field5['name'] = 'Threat Level'
+    field5['value'] = ThreatGraph or "Unknown"
+    field5['inline'] = false
+    table.insert(embed.fields, field5)
+    local field6 = {}    
+    field6['name'] = 'Target Coordinates'
+    field6['value'] = targetmgrs
+    field6['inline'] = false
+    table.insert(embed.fields, field6)
+    local field7 = {}    
+    field7['name'] = 'Target Coordinates'
+    field7['value'] = targetllddm or "Unknown"
+    field7['inline'] = false
+    table.insert(embed.fields, field7)
+  embed.footer = "Join now and get in on the action!"
+  dcsbot.updateEmbed('OSPStatus2', embed.title, embed.description, embed.img, embed.fields, embed.footer,"1040466446842593371")  
+  
 end
 
-function OSPPhase2Op:OnAfterOver(From,Event,To,Phase)
+---
+-- Operation finished
+function WestPhase1Operation:OnAfterOver(From,Event,To,Phase)
     MESSAGE:New("Operation Sleeping Phoenix - Operational Area Controlled /nRetasking Missions and Switching Operational Area /nSee F10 Map for Current Operational Area!",15,"Phoenix"):ToBlue()
     PhoenixSRS:PlayText("Phoenix to all units, Operational Area Controlled, Retasking Missions and Switching Operational Area, See F10 Map for New Operational Area",1)
-    CurrentOperation = OSPPhase3Op
-    CurrentMissions = OSPPhase3
-    CurrentTargets = OSPPhase3Targets
-    OSPPhase2Op:Stop()
-    OSPPhase3Op:__Start(15)
-    RedChief:SetBorderZones(RedBorder3)
-    BlueChief:SetBorderZones(BlueBorder3)
-    BlueChief:AddMission(BlueGCICAP03)
+    WestOperation = WestPhase2Operation
+    WestMissions = OPWestPhase2
+    WestTargets = OPWestPhase2Targets
+    WestPhase1Operation:Stop()
+    WestPhase2Operation:__Start(15)
+    RedEngageSet:RemoveZone(RedBorder3)
+    BlueEngageSet:AddZone(BlueBorder3)
+    
 end
-function OSPPhase3Op:OnAfterOver(From,Event,To,Phase)
+
+--function WestPhase2Operation:OnAfterOver(From,Event,To,Phase)
+--    MESSAGE:New("Operation Sleeping Phoenix - Operational Area Controlled /nRetasking Missions and Switching Operational Area /nSee F10 Map for Current Operational Area!",15,"Phoenix"):ToBlue()
+--    PhoenixSRS:PlayText("Phoenix to all units, Operational Area Controlled, Retasking Missions and Switching Operational Area, See F10 Map for New Operational Area",1)
+--    WestOperation = OSPPhase3Op
+--    WestMissions = OSPPhase3
+--    WestTargets = OSPPhase3Targets
+--    WestPhase2Operation:Stop()
+--    WestPhase5Operation:__Start(15)
+--    RedChief:SetBorderZones(RedBorder3)
+--    BlueChief:SetBorderZones(BlueBorder3)
+--    BlueChief:AddMission(BlueGCICAP03)
+--end
+function EastPhase1Operation:OnAfterOver(From,Event,To,Phase)
     MESSAGE:New("Operation Sleeping Phoenix - Operational Area Controlled /nRetasking Missions and Switching Operational Area /nSee F10 Map for Current Operational Area!",15,"Phoenix"):ToBlue()
     PhoenixSRS:PlayText("Phoenix to all units, Operational Area Controlled, Retasking Missions and Switching Operational Area, See F10 Map for New Operational Area",1)
-    CurrentOperation = OSPPhase4Op
-    CurrentMissions = OSPPhase4
-    CurrentTargets = OSPPhase4Targets
-    OSPPhase3Op:Stop()
-    OSPPhase4Op:__Start(15)
-    RedChief:SetBorderZones(RedBorder4)
-    BlueChief:SetBorderZones(BlueBorder4)
+    EastOperation = EastPhase2Operation
+    EastMissions = OPEastPhase2
+    EastTargets = OPEastPhase2Targets
+    EastPhase1Operation:Stop()
+    EastPhase2Operation:__Start(15)
+    RedEngageSet:RemoveZone(RedBorder2)
+    BlueEngageSet:AddZone(BlueBorder2)
 end
