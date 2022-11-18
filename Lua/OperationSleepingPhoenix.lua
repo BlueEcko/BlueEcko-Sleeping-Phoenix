@@ -58,7 +58,7 @@ RedBorder1 = ZONE_POLYGON:NewFromGroupName("RedBorder-1")
 RedBorder2 = ZONE_POLYGON:NewFromGroupName("RedBorder-2")
 RedBorder3 = ZONE_POLYGON:NewFromGroupName("RedBorder-3")
 RedBorder4 = ZONE_POLYGON:NewFromGroupName("RedBorder-4")
-RedEngageSet = SET_ZONE:New():AddZone(RedBorder1, RedBorder2, RedBorder3, RedBorder4):DrawZone(2,{1,0,0},.5,{1,0,0},.15,2,true)
+RedEngageSet = SET_ZONE:New():AddZone(RedBorder1):AddZone(RedBorder2):AddZone(RedBorder3):AddZone(RedBorder4):DrawZone(2,{1,0,0},.5,{1,0,0},.15,2,true)
 BlueEngageSet = SET_ZONE:New():AddZone(BlueBorder1):DrawZone(2,{0,0,1},.5,{0,0,1},.15,2,true)
 
 
