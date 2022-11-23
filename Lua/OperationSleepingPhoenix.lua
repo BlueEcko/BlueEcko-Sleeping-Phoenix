@@ -1,6 +1,7 @@
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- SRS and Mission Config
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+BASE:I("Operation Sleeping Phoenix Loading v.0.7.5")
 -- Settings
 _SETTINGS:SetPlayerMenuOff()
 _SETTINGS:SetImperial()
@@ -1456,7 +1457,37 @@ BlueChief:SetResponseOnTarget(1, 4, 4, TARGET.Category.AIRCRAFT)
 BlueChief:SetVerbosity(0)
 BlueChief:__Start(10)
 
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+-- FARP MANAGEMENT
+--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
+function DallasFARPPhase1()
+  local FarpDallasZone1=ZONE:FindByName("FARP DALLAS PHASE 1")
+  local SpawnDallasFarp=SPAWNSTATIC:NewFromStatic("FARP DALLAS",country.id.USA)
+        SpawnDallasFarp:InitFARP(CALLSIGN.FARP.Dallas, 130.000, 0)
+        SpawnDallasFarp:InitCountry(country.id.USA)
+  local FarpDallas=SpawnDallasFarp:SpawnFromZone(FarpDallasZone1, 90, "FARP DALLAS")
+        local findfarp = STATIC:FindByName("FARP DALLAS")
+        local FarpSupply= SPAWN:New("FARPSUPPORT"):SpawnFromStatic(findfarp)
 
+
+end
+
+function DallasFARPPhase2()
+  local FarpDallasZone2=ZONE:FindByName("FARP DALLAS PHASE 2")
+  local SpawnDallasFarp=SPAWNSTATIC:NewFromStatic("FARP DALLAS", country.id.USA)
+        SpawnDallasFarp:InitFARP(CALLSIGN.FARP.Dallas, 130.000, 0)
+  local FarpDallas=SpawnDallasFarp:SpawnFromZone(FarpDallasZone2, 90, "FARP DALLAS")
+        local findfarp = STATIC:FindByName("FARP DALLAS")
+        local FarpSupply= SPAWN:New("FARPSUPPORT"):SpawnFromStatic(findfarp)
+end
+function DallasFARPPhase3()
+  local FarpDallasZone3=ZONE:FindByName("FARP DALLAS PHASE 3")
+  local SpawnDallasFarp=SPAWNSTATIC:NewFromStatic("FARP DALLAS", country.id.USA)
+        SpawnDallasFarp:InitFARP(CALLSIGN.FARP.Dallas, 130.000, 0)
+  local FarpDallas=SpawnDallasFarp:SpawnFromZone(FarpDallasZone3, 90, "FARP DALLAS")
+        local findfarp = STATIC:FindByName("FARP DALLAS")
+        local FarpSupply= SPAWN:New("FARPSUPPORT"):SpawnFromStatic(findfarp)
+end
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- TODO Operation start and phase changes
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
@@ -1471,11 +1502,13 @@ EastTargets = OPEastPhase1Targets
 function WestPhase1Operation:OnAfterStart(From,Event,To)
     MESSAGE:New("Operation Sleeping Phoenix West Phase 1 Started!",15,"Phoenix"):ToBlue()
     PhoenixSRS:PlayText("Operation Sleeping Phoenix West Phase 1 Started!",1)
+    DallasFARPPhase1()
 end
 
 function WestPhase2Operation:OnAfterStart(From,Event,To)
     MESSAGE:New("Mission Progress - Operation Sleeping Phoenix West Phase 2 Started!",15,"Phoenix"):ToBlue()
     PhoenixSRS:PlayText("Mission Progress - Operation Sleeping Phoenix West Phase 2 Started!",1)
+    DallasFARPPhase2()
 end
 
 function EastPhase1Operation:OnAfterStart(From,Event,To)
@@ -1634,6 +1667,12 @@ function EastOperation:OnAfterPhaseChange(From,Event,To,Phase)
 end
 
 ---
+
+
+
+
+
+
 -- Operation finished
 function WestPhase1Operation:OnAfterOver(From,Event,To,Phase)
     MESSAGE:New("Operation Sleeping Phoenix - Operational Area Controlled /nRetasking Missions and Switching Operational Area /nSee F10 Map for Current Operational Area!",15,"Phoenix"):ToBlue()
