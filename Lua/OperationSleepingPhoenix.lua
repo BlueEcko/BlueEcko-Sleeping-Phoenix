@@ -50,7 +50,6 @@ BlueAWACSZone1 = ZONE:FindByName("BlueAWACS1")
 BlueTexacoZone1 = ZONE:FindByName("TexacoNorth1")
 BlueShellZone1 = ZONE:FindByName("ShellSouth1")
 
-
 BlueBorder1 = ZONE_POLYGON:NewFromGroupName("BlueBorder-1")
 BlueBorder2 = ZONE_POLYGON:NewFromGroupName("BlueBorder-2")
 BlueBorder3 = ZONE_POLYGON:NewFromGroupName("BlueBorder-3")
@@ -108,7 +107,7 @@ phoenixeasttasking:SetAllowFlashDirection(true)
 phoenixeasttasking:SetLocale("en")
 phoenixeasttasking:SetMenuName("Phoenix East")
 phoenixeasttasking:SetSRS({34,134,284},{radio.modulation.FM,radio.modulation.AM,radio.modulation.AM},hereSRSPath,nil,nil,hereSRSPort,"en-AU-Wavenet-C",0.7,hereSRSGoogle)
-phoenixeasttasking:SetSRSBroadcast({30,130,280},{radio.modulation.FM,radio.modulation.AM,radio.modulation.AM})
+phoenixeasttasking:SetSRSBroadcast({31,131,281},{radio.modulation.FM,radio.modulation.AM,radio.modulation.AM})
 phoenixeasttasking:SetTargetRadius(750)
 phoenixeasttasking:SetParentMenu(menu)
 phoenixeasttasking:SetTransmitOnlyWithPlayers(true)
@@ -1467,9 +1466,7 @@ function DallasFARPPhase1()
         SpawnDallasFarp:InitCountry(country.id.USA)
   local FarpDallas=SpawnDallasFarp:SpawnFromZone(FarpDallasZone1, 90, "FARP DALLAS")
         local findfarp = STATIC:FindByName("FARP DALLAS")
-        local FarpSupply= SPAWN:New("FARPSUPPORT"):SpawnFromStatic(findfarp)
-
-
+        local FarpSupply= SPAWN:New("FARPSUPPORTDALLAS"):SpawnFromStatic(findfarp)
 end
 
 function DallasFARPPhase2()
@@ -1478,7 +1475,7 @@ function DallasFARPPhase2()
         SpawnDallasFarp:InitFARP(CALLSIGN.FARP.Dallas, 130.000, 0)
   local FarpDallas=SpawnDallasFarp:SpawnFromZone(FarpDallasZone2, 90, "FARP DALLAS")
         local findfarp = STATIC:FindByName("FARP DALLAS")
-        local FarpSupply= SPAWN:New("FARPSUPPORT"):SpawnFromStatic(findfarp)
+        local FarpSupply= SPAWN:New("FARPSUPPORTDALLAS"):SpawnFromStatic(findfarp)
 end
 function DallasFARPPhase3()
   local FarpDallasZone3=ZONE:FindByName("FARP DALLAS PHASE 3")
@@ -1486,7 +1483,37 @@ function DallasFARPPhase3()
         SpawnDallasFarp:InitFARP(CALLSIGN.FARP.Dallas, 130.000, 0)
   local FarpDallas=SpawnDallasFarp:SpawnFromZone(FarpDallasZone3, 90, "FARP DALLAS")
         local findfarp = STATIC:FindByName("FARP DALLAS")
-        local FarpSupply= SPAWN:New("FARPSUPPORT"):SpawnFromStatic(findfarp)
+        local FarpSupply= SPAWN:New("FARPSUPPORTDALLAS"):SpawnFromStatic(findfarp)
+end
+
+function LondonFARPPhase1()
+  local FarpLondonZone1=ZONE:FindByName("FARP LONDON PHASE 1")
+  local SpawnLondonFarp=SPAWNSTATIC:NewFromStatic("FARP LONDON",country.id.USA)
+        SpawnLondonFarp:InitFARP(CALLSIGN.FARP.London, 131.000, 0)
+        SpawnLondonFarp:InitCountry(country.id.USA)
+  local FarpDallas=SpawnLondonFarp:SpawnFromZone(FarpLondonZone1, 90, "FARP LONDON")
+        local findfarp = STATIC:FindByName("FARP LONDON")
+        local FarpSupply= SPAWN:New("FARPSUPPORTLONDON"):SpawnFromStatic(findfarp)
+end
+
+function LondonFARPPhase2()
+  local FarpLondonZone2=ZONE:FindByName("FARP LONDON PHASE 2")
+  local SpawnLondonFarp=SPAWNSTATIC:NewFromStatic("FARP LONDON",country.id.USA)
+        SpawnLondonFarp:InitFARP(CALLSIGN.FARP.London, 131.000, 0)
+        SpawnLondonFarp:InitCountry(country.id.USA)
+  local FarpDallas=SpawnLondonFarp:SpawnFromZone(FarpLondonZone2, 90, "FARP LONDON")
+        local findfarp = STATIC:FindByName("FARP LONDON")
+        local FarpSupply= SPAWN:New("FARPSUPPORTLONDON"):SpawnFromStatic(findfarp)
+end
+
+function LondonFARPPhase3()
+  local FarpLondonZone3=ZONE:FindByName("FARP LONDON PHASE 3")
+  local SpawnLondonFarp=SPAWNSTATIC:NewFromStatic("FARP LONDON",country.id.USA)
+        SpawnLondonFarp:InitFARP(CALLSIGN.FARP.London, 131.000, 0)
+        SpawnLondonFarp:InitCountry(country.id.USA)
+  local FarpDallas=SpawnLondonFarp:SpawnFromZone(FarpLondonZone3, 90, "FARP LONDON")
+        local findfarp = STATIC:FindByName("FARP LONDON")
+        local FarpSupply= SPAWN:New("FARPSUPPORTLONDON"):SpawnFromStatic(findfarp)
 end
 --///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////--
 -- TODO Operation start and phase changes
@@ -1514,11 +1541,13 @@ end
 function EastPhase1Operation:OnAfterStart(From,Event,To)
     MESSAGE:New("Operation Sleeping Phoenix East Phase 1 Started!",15,"Phoenix"):ToBlue()
     PhoenixSRS:PlayText("Operation Sleeping Phoenix East Phase 1 Started!",1)
+    LondonFARPPhase1()
 end
 
 function EastPhase2Operation:OnAfterStart(From,Event,To)
     MESSAGE:New("Mission Progress - Operation Sleeping Phoenix East Phase 2 Started!",15,"Phoenix"):ToBlue()
     PhoenixSRS:PlayText("Mission Progress - Operation Sleeping Phoenix East Phase 2 Started!",1)
+    LondonFARPPhase2()
 end
 
 
@@ -1547,8 +1576,8 @@ function WestOperation:OnAfterPhaseChange(From,Event,To,Phase)
   local phasesremain = tostring(WestOperation:CountPhases(OPERATION.PhaseStatus.ACTIVE) + WestOperation:CountPhases(OPERATION.PhaseStatus.PLANNED))
   local threatlevel = targetgroup:GetThreatLevel()
   local ThreatGraph = "[" .. string.rep(  "■", threatlevel ) .. string.rep(  "□", 10 - threatlevel ) .. "]: "..threatlevel
-  local targetcoord = targetgroup:GetCoordinate()
-  local targetmgrs = targetcoord:ToStringMGRS()
+  local targetcoord = targetgroup:GetCoordinate() or "Unknown"
+  local targetmgrs = targetcoord:ToStringMGRS() 
   local targetllddm = targetcoord:ToStringLLDDM()
   local embed = {}
   embed.title = "Operation Sleeping Phoenix West Region"
