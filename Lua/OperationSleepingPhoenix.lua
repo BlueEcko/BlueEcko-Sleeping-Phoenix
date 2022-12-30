@@ -1711,7 +1711,7 @@ function WestPhase1Operation:OnAfterOver(From,Event,To,Phase)
     WestTargets = OPWestPhase2Targets
     WestPhase1Operation:Stop()
     WestPhase2Operation:__Start(15)
-    RedEngageSet:RemoveZone(RedBorder3)
+    RedEngageSet:RemoveZonesByName(RedBorder3)
     BlueEngageSet:AddZone(BlueBorder3)
     
 end
@@ -1736,6 +1736,6 @@ function EastPhase1Operation:OnAfterOver(From,Event,To,Phase)
     EastTargets = OPEastPhase2Targets
     EastPhase1Operation:Stop()
     EastPhase2Operation:__Start(15)
-    RedEngageSet:RemoveZone(RedBorder2)
+    RedEngageSet:RemoveZonesByName(RedBorder2)
     BlueEngageSet:AddZone(BlueBorder2)
 end
